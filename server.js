@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import createError from "http-errors";
+import swaggerJsDoc from "swagger-jsdoc"
+import swaggerUI from "swagger-ui-express"
+
 
 // dotenv configuration
 require("dotenv").config();
@@ -11,7 +14,31 @@ import "./config/db";
 
 const PORT = process.env.PORT 
 
+
+// swagger options
+const options = {
+	definition: {
+		openapi: "3.0.0",
+		info: {
+			title: "URL Hashing API",
+			version: "1.0.0",
+			description: "URL Hashing API",
+		},
+		servers: [
+			{
+				url: process.env.BASE_URL,
+			},
+		],
+	},
+	apis: ["./routes/*.js"],
+};
+
+const specs = swaggerJsDoc(options);
+
+
 const app = express();
+
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 // middlewares
 app.use(express.static(__dirname));
